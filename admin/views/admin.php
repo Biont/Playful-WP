@@ -14,11 +14,12 @@
 ?>
 
 <div class="wrap">
+    PLUGINS::
+    <?php var_dump($available_plugins); ?>
 
     <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
     <form method="post">
         <?php settings_fields('playful-wp-settings'); ?>
-        <?php do_settings_sections('playful-wp-settings'); ?>
         <table class="form-table">
             <tr valign="top">
                 <th scope="row">New Option Name</th>
@@ -42,3 +43,4 @@
     <!-- @TODO: Provide markup for your options page here. -->
 
 </div>
+

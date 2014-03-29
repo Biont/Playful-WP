@@ -41,6 +41,14 @@ class PlayfulWPAdmin {
      * @var      string
      */
     protected $plugin_screen_hook_suffix = null;
+    protected $settings = null;
+
+    /**
+     * All compatible plugins in the plugins folder
+     *
+     * @var array
+     */
+    protected $available_plugins = null;
 
     /**
      * Initialize the plugin by loading admin scripts & styles and adding a
@@ -68,17 +76,14 @@ class PlayfulWPAdmin {
          *
          */
         $plugin = PlayfulWP::get_instance();
+        $settings = PlayfulWPSettings::get_instance();
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         // Load admin style sheet and JavaScript.
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
 
-        // Add the options page and menu item.
-        add_action('admin_init', array($this, 'register_settings'));
 
-        // Add the options page and menu item.
-        add_action('admin_menu', array($this, 'add_plugin_admin_menu'));
 
         // Add an action link pointing to the options page.
         $plugin_basename = plugin_basename(plugin_dir_path(__DIR__) . $this->plugin_slug . '.php');
@@ -118,6 +123,30 @@ class PlayfulWPAdmin {
         }
 
         return self::$instance;
+    }
+
+    public function get_available_plugins() {
+        if ($this->available_plugins == null) {
+
+            foreach (glob(plugin_dir_path(__FILE__) . '../plugins/*', GLOB_ONLYDIR) as $plugin) {
+                if (file_exists($filename = $plugin . '/' . basename($plugin) . '.php'))
+                    $this->available_plugins[] = get_file_data($filename, array(
+                        'Name' => 'Plugin Name',
+                        'PluginURI' => 'Plugin URI',
+                        'Description' => 'Description',
+                        'Author' => 'Author',
+                        'AuthorURI' => 'Author URI',
+                        'Version' => 'Version',
+                        'Template' => 'Template',
+                        'Status' => 'Status',
+                        'Tags' => 'Tags',
+                        'TextDomain' => 'Text Domain',
+                        'DomainPath' => 'Domain Path',
+                    ));
+            }
+        }
+
+        return $this->available_plugins;
     }
 
     /**
@@ -164,54 +193,6 @@ class PlayfulWPAdmin {
         if ($this->plugin_screen_hook_suffix == $screen->id) {
             wp_enqueue_script($this->plugin_slug . '-admin-script', plugins_url('assets/js/admin.js', __FILE__), array('jquery'), PlayfulWP::VERSION);
         }
-    }
-
-    /**
-     * Register the settings for this plugin
-     *
-     */
-    public function register_settings() {
-
-        register_setting('playful-wp-settings', 'new_option_name');
-        register_setting('playful-wp-settings', 'some_other_option');
-        register_setting('playful-wp-settings', 'option_etc');
-    }
-
-    /**
-     * Register the administration menu for this plugin into the WordPress Dashboard menu.
-     *
-     * @since    1.0.0
-     */
-    public function add_plugin_admin_menu() {
-
-        /*
-         * Add a settings page for this plugin to the Settings menu.
-         *
-         * NOTE:  Alternative menu locations are available via WordPress administration menu functions.
-         *
-         *        Administration Menus: http://codex.wordpress.org/Administration_Menus
-         *
-         * @TODO:
-         *
-         * - Change 'Page Title' to the title of your plugin admin page
-         * - Change 'Menu Text' to the text for menu item for the plugin settings page
-         * - Change 'manage_options' to the capability you see fit
-         *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
-         */
-        $this->plugin_screen_hook_suffix = add_options_page(
-                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', $this->plugin_slug, array($this, 'display_plugin_admin_page')
-        );
-    }
-
-    /**
-     * Render the settings page for this plugin.
-     *
-     * @since    1.0.0
-     */
-    public function display_plugin_admin_page() {
-
-
-        include_once( 'views/admin.php' );
     }
 
     /**
