@@ -48,7 +48,7 @@ class PlayfulWPAdmin {
      *
      * @var array
      */
-    protected $available_plugins = null;
+//    protected $installed_plugins = null;
 
     /**
      * Initialize the plugin by loading admin scripts & styles and adding a
@@ -76,7 +76,7 @@ class PlayfulWPAdmin {
          *
          */
         $plugin = PlayfulWP::get_instance();
-        $settings = PlayfulWPSettings::get_instance();
+        $this->settings = PlayfulWPSettings::get_instance();
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         // Load admin style sheet and JavaScript.
@@ -125,12 +125,17 @@ class PlayfulWPAdmin {
         return self::$instance;
     }
 
-    public function get_available_plugins() {
-        if ($this->available_plugins == null) {
+    /**
+     * Returns an array  of all plugins in the plugins folder
+     * @TODO: Check for existence of file_data?
+     * @return type
+     */
+    public function get_installed_plugins() {
+        if ($this->installed_plugins == null) {
 
             foreach (glob(plugin_dir_path(__FILE__) . '../plugins/*', GLOB_ONLYDIR) as $plugin) {
                 if (file_exists($filename = $plugin . '/' . basename($plugin) . '.php'))
-                    $this->available_plugins[] = get_file_data($filename, array(
+                    $data = get_file_data($filename, array(
                         'Name' => 'Plugin Name',
                         'PluginURI' => 'Plugin URI',
                         'Description' => 'Description',
@@ -143,10 +148,28 @@ class PlayfulWPAdmin {
                         'TextDomain' => 'Text Domain',
                         'DomainPath' => 'Domain Path',
                     ));
+
+                $data['File'] = $filename;
+
+                $this->installed_plugins[] = $data;
             }
         }
 
-        return $this->available_plugins;
+        return $this->installed_plugins;
+    }
+
+    /**
+     * Returns an array of all currently active plugins
+     * @TODO: Check for existence of file_data?
+     * @return type
+     */
+    public function get_active_plugins() {
+        if ($this->active_plugins == null) {
+
+//TODO
+        }
+
+        return $this->active_plugins;
     }
 
     /**

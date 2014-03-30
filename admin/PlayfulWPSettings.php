@@ -14,9 +14,15 @@
 class PlayfulWPSettings {
 
     protected static $instance = null;
+    protected $admin = null;
+    protected $plugin = null;
+    protected $plugin_slug = null;
     protected $settings_tabs = array();
 
     private function __construct() {
+
+        $this->plugin_slug = PlayfulWP::get_instance()->get_plugin_slug();
+
         // Add the options page and menu item.
         add_action('admin_init', array($this, 'register_settings'));
 
@@ -63,6 +69,30 @@ class PlayfulWPSettings {
         register_setting('playful-wp-settings', 'new_option_name');
         register_setting('playful-wp-settings', 'some_other_option');
         register_setting('playful-wp-settings', 'option_etc');
+        //Plugins
+        register_setting('playful-wp-plugins', 'pfwp_active_plugins', array($this, 'change_plugin_status'));
+    }
+
+    public function change_plugin_status($plugins) {
+        if ($plugins == null)
+            $plugins = array();
+//        $active_plugins = $admin->get_active_plugins();
+        error_log('hui');
+
+        $active = get_option('pfwp_active_plugins');
+
+        $activated_plugins = array_intersect($plugins, $active);
+
+        $installed_plugins = PlayfulWPAdmin::get_instance()->get_installed_plugins();
+
+        var_dump($activated_plugins);
+
+//        exit;
+        return $plugins;
+    }
+
+    public function on_plugin_activation() {
+        error_log('hui');
     }
 
     /**
@@ -86,9 +116,17 @@ class PlayfulWPSettings {
          * - Change 'manage_options' to the capability you see fit
          *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
          */
-        $this->plugin_screen_hook_suffix = add_options_page(
-                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', $this->plugin_slug, array($this, 'display_plugin_admin_page')
+        $this->plugin_screen_hook_suffix = add_menu_page(
+                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', 'playful_wp_settings', array($this, 'display_admin_page'), 'hurr', 19
         );
+
+        add_submenu_page('playful_wp_settings', __('Playful WP Plugins', $this->plugin_slug), __('Plugins', $this->plugin_slug), 'manage_options', 'playful_plugins', array($this, 'display_plugin_page'));
+
+
+
+//        $this->plugin_screen_hook_suffix = add_options_page(
+//                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', $this->plugin_slug, array($this, 'display_plugin_admin_page')
+//        );
     }
 
     /**
@@ -96,10 +134,21 @@ class PlayfulWPSettings {
      *
      * @since    1.0.0
      */
-    public function display_plugin_admin_page() {
+    public function display_admin_page() {
 
-        $available_plugins = PlayfulWPAdmin::get_instance()->get_available_plugins();
         include_once( 'views/admin.php' );
+    }
+
+    /**
+     * Render the settings page for this plugin.
+     *
+     * @since    1.0.0
+     */
+    public function display_plugin_page() {
+        $admin = PlayfulWPAdmin::get_instance();
+        $installed_plugins = $admin->get_installed_plugins();
+        $active_plugins = $admin->get_active_plugins();
+        include_once( 'views/plugins.php' );
     }
 
 }

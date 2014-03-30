@@ -14,11 +14,8 @@
 ?>
 
 <div class="wrap">
-    PLUGINS::
-    <?php var_dump($available_plugins); ?>
-
     <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
-    <form method="post">
+    <form action="options.php" method="post">
         <?php settings_fields('playful-wp-settings'); ?>
         <table class="form-table">
             <tr valign="top">
