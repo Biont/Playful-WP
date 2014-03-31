@@ -68,6 +68,7 @@ class PlayfulWP {
 
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
+        add_action('init', array($this, 'load_plugins'));
 
         // Activate plugin when new blog is added
         add_action('wpmu_new_blog', array($this, 'activate_new_site'));
@@ -75,6 +76,9 @@ class PlayfulWP {
         // Load public-facing style sheet and JavaScript.
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+
+
+
 
 
         /**
@@ -297,6 +301,17 @@ class PlayfulWP {
      */
     public function filter_method_name() {
         // @TODO: Define your filter hook callback here
+    }
+
+    public function load_plugins() {
+
+        $active = get_option('pfwp_active_plugins');
+        if ($active != null && is_array($active)) {
+            foreach ($active as $plugin) {
+                $filename = dirname(plugin_dir_path(__FILE__)) . '/plugins/' . basename($plugin, '.php') . '/' . $plugin;
+                require_once( $filename);
+            }
+        }
     }
 
 }

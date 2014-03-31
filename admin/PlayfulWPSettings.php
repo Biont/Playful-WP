@@ -121,12 +121,6 @@ class PlayfulWPSettings {
         );
 
         add_submenu_page('playful_wp_settings', __('Playful WP Plugins', $this->plugin_slug), __('Plugins', $this->plugin_slug), 'manage_options', 'playful_plugins', array($this, 'display_plugin_page'));
-
-
-
-//        $this->plugin_screen_hook_suffix = add_options_page(
-//                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', $this->plugin_slug, array($this, 'display_plugin_admin_page')
-//        );
     }
 
     /**
@@ -135,7 +129,6 @@ class PlayfulWPSettings {
      * @since    1.0.0
      */
     public function display_admin_page() {
-
         include_once( 'views/admin.php' );
     }
 
@@ -147,8 +140,39 @@ class PlayfulWPSettings {
     public function display_plugin_page() {
         $admin = PlayfulWPAdmin::get_instance();
         $installed_plugins = $admin->get_installed_plugins();
-        $active_plugins = $admin->get_active_plugins();
+        $active_plugins = get_option('pfwp_active_plugins');
+
+        do_action('playful_wp_plugin_activation');
+
         include_once( 'views/plugins.php' );
+
+        //Handle Plugin actions:
+
+        if (isset($_GET['action'])) {
+            $filename = dirname(plugin_dir_path(__FILE__)) . '/plugins/' . basename($_GET['plugin'], '.php') . '/' . $_GET['plugin'];
+
+            include_once( $filename);
+
+            if ($_GET['action'] == 'activate') {
+
+                if (!in_array($_GET['plugin'], $active_plugins)) {
+                    $active_plugins[] = $_GET['plugin'];
+                    update_option('pfwp_active_plugins', $active_plugins);
+                    do_action('activate_' . plugin_basename($filename));
+                }
+            }
+
+            if ($_GET['action'] == 'deactivate') {
+
+                if (FALSE !== $key = array_search($_GET['plugin'], $active_plugins)) {
+                    unset($active_plugins[$key]);
+                    update_option('pfwp_active_plugins', $active_plugins);
+                    do_action('deactivate_' . plugin_basename($filename));
+                }
+            }
+
+            var_dump(get_option('pfwp_active_plugins'));
+        }
     }
 
 }

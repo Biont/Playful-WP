@@ -10,4 +10,15 @@ function pfwp_get_settings_tabs() {
 
 }
 
+//function pfwp_register_activation_hook($file, $callback) {
+//    add_action('activate_' . $file, $callback);
+//}
+//
+//function pfwp_register_deactivation_hook($file, $callback) {
+//    add_action('deactivate_' . $file, $callback);
+//}
+//
+//function pfwp_register_uninstall_hook($file, $callback) {
+//    add_action('uninstall_' . $file, $callback);
+//}
 ?>

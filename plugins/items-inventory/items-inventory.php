@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The WordPress Plugin Boilerplate.
  *
@@ -13,7 +12,7 @@
  * @copyright 2014 Your Name or Company Name
  *
  * @PlayfulWP-plugin
- * Plugin Name:       Items and Inventory
+ * PFWP-Plugin Name:       Items and Inventory
  * Plugin URI:        @TODO
  * Description:       Adds an inventory to each user and lets you add items
  * Version:           1.0.0
@@ -27,3 +26,4 @@
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 ?>
+INVENTAREEE!!!!<p>

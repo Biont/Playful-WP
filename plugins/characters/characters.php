@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The WordPress Plugin Boilerplate.
  *
@@ -13,7 +12,7 @@
  * @copyright 2014 Your Name or Company Name
  *
  * @PlayfulWP-plugin
- * Plugin Name:       Characters
+ * PFWP-Plugin Name:       Characters
  * Plugin URI:        @TODO
  * Description:       This plugin adds all functionality for character creation and management
  * Version:           1.0.0
@@ -26,4 +25,17 @@
  * GitHub Plugin URI: https://github.com/<owner>/<repo>
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
+$plugin_path = plugin_dir_path(__FILE__);
+require_once( $plugin_path . 'public/PlayfulCharacters.php' );
+
+/*
+ * Register hooks that are fired when the plugin is activated or deactivated.
+ * When the plugin is deleted, the uninstall.php file is loaded.
+ */
+register_activation_hook(__FILE__, array('PlayfulCharacters', 'activate'));
+register_deactivation_hook(__FILE__, array('PlayfulCharacters', 'deactivate'));
 ?>
+CHARAKTERE !!!!!!<p>
+
+
+

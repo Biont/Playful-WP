@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The WordPress Plugin Boilerplate.
  *
@@ -13,7 +12,7 @@
  * @copyright 2014 Your Name or Company Name
  *
  * @PlayfulWP-plugin
- * Plugin Name:       Quests
+ * PFWP-Plugin Name:       Quests
  * Plugin URI:        @TODO
  * Description:       Add quests for your users to solve
  * Version:           1.0.0
@@ -27,3 +26,4 @@
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 ?>
+QUESTS!!!!!<p>

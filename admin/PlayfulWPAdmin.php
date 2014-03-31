@@ -133,10 +133,10 @@ class PlayfulWPAdmin {
     public function get_installed_plugins() {
         if ($this->installed_plugins == null) {
 
-            foreach (glob(plugin_dir_path(__FILE__) . '../plugins/*', GLOB_ONLYDIR) as $plugin) {
+            foreach (glob(dirname(plugin_dir_path(__FILE__)) . '/plugins/*', GLOB_ONLYDIR) as $plugin) {
                 if (file_exists($filename = $plugin . '/' . basename($plugin) . '.php'))
                     $data = get_file_data($filename, array(
-                        'Name' => 'Plugin Name',
+                        'Name' => 'PFWP-Plugin Name',
                         'PluginURI' => 'Plugin URI',
                         'Description' => 'Description',
                         'Author' => 'Author',
@@ -149,27 +149,13 @@ class PlayfulWPAdmin {
                         'DomainPath' => 'Domain Path',
                     ));
 
-                $data['File'] = $filename;
+                $data['File'] = basename($filename);
 
                 $this->installed_plugins[] = $data;
             }
         }
 
         return $this->installed_plugins;
-    }
-
-    /**
-     * Returns an array of all currently active plugins
-     * @TODO: Check for existence of file_data?
-     * @return type
-     */
-    public function get_active_plugins() {
-        if ($this->active_plugins == null) {
-
-//TODO
-        }
-
-        return $this->active_plugins;
     }
 
     /**
