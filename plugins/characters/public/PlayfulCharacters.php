@@ -1,5 +1,4 @@
 <?php
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -46,6 +45,7 @@ class PlayfulCharacters {
      * @since     1.0.0
      */
     private function __construct() {
+        $this->plugin_slug = PlayfulWP::get_instance()->get_plugin_slug();
 
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
@@ -64,7 +64,7 @@ class PlayfulCharacters {
         /* Define custom functionality.
          * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
          */
-        add_action('@TODO', array($this, 'action_method_name'));
+        add_action('register_form', array($this, 'add_register_form'));
         add_filter('@TODO', array($this, 'filter_method_name'));
     }
 
@@ -160,12 +160,20 @@ class PlayfulCharacters {
      * @since    1.0.0
      */
     public function load_plugin_textdomain() {
-
         $domain = $this->plugin_slug;
         $locale = apply_filters('plugin_locale', get_locale(), $domain);
 
         load_textdomain($domain, trailingslashit(WP_LANG_DIR) . $domain . '/' . $domain . '-' . $locale . '.mo');
         load_plugin_textdomain($domain, FALSE, basename(plugin_dir_path(dirname(__FILE__))) . '/languages/');
+    }
+
+    public function add_register_form() {
+        ?>
+        <p>
+            <label for="race"><?php echo __('Rasse', $this->plugin_slug) ?><br />
+                <input type="text" name="first_name" id="first_name" class="input" value="<?php echo esc_attr(stripslashes($first_name)); ?>" size="25" /></label>
+        </p>
+        <?php
     }
 
 }

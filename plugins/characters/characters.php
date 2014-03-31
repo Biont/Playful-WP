@@ -34,6 +34,27 @@ require_once( $plugin_path . 'public/PlayfulCharacters.php' );
  */
 register_activation_hook(__FILE__, array('PlayfulCharacters', 'activate'));
 register_deactivation_hook(__FILE__, array('PlayfulCharacters', 'deactivate'));
+
+
+
+PlayfulCharacters::get_instance();
+
+
+/*
+ *
+ * If you want to include Ajax within the dashboard, change the following
+ * conditional to:
+ *
+ * if ( is_admin() ) {
+ *   ...
+ * }
+ *
+ * The code below is intended to to give the lightest footprint possible.
+ */
+if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX )) {
+    require_once( $plugin_path . 'admin/PlayfulCharacterAdmin.php' );
+    PlayfulCharacterAdmin::get_instance();
+}
 ?>
 CHARAKTERE !!!!!!<p>
 

@@ -23,7 +23,7 @@
             <tbody id="the-list">
 
                 <?php foreach ($installed_plugins as $index => $plugin): ?>
-                    <?php var_dump($plugin); ?>
+                    <?php // var_dump($plugin); ?>
                 <p>
                     <?php $active = (in_array($plugin['File'], $active_plugins)) ?>
 

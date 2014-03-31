@@ -48,6 +48,8 @@ register_deactivation_hook(__FILE__, array('PlayfulWP', 'deactivate'));
 
 add_action('plugins_loaded', array('PlayfulWP', 'get_instance'));
 
+
+
 /* ----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
  * ---------------------------------------------------------------------------- */
