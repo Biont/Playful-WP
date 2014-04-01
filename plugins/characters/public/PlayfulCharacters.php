@@ -168,10 +168,35 @@ class PlayfulCharacters {
     }
 
     public function add_register_form() {
+
+        $races = pfwp_get_option('character_races');
+        $classes = pfwp_get_option('character_classes');
         ?>
         <p>
-            <label for="race"><?php echo __('Rasse', $this->plugin_slug) ?><br />
-                <input type="text" name="first_name" id="first_name" class="input" value="<?php echo esc_attr(stripslashes($first_name)); ?>" size="25" /></label>
+            <label for="race"><?php echo __('Sex', $this->plugin_slug) ?><br />
+                <select>
+                    <option><?php echo __('Male', $this->plugin_slug) ?></option>
+                    <option><?php echo __('Female', $this->plugin_slug) ?></option>
+                </select>
+        </p>
+        <p>
+
+        <p>
+            <label for="race"><?php echo __('Race', $this->plugin_slug) ?><br />
+                <select>
+                    <option><?php echo __('Elf', $this->plugin_slug) ?></option>
+                    <option><?php echo __('Human', $this->plugin_slug) ?></option>
+                    <option><?php echo __('Gnome', $this->plugin_slug) ?></option>
+                </select>
+        </p>
+
+        <p>
+            <label for="race"><?php echo __('Class', $this->plugin_slug) ?><br />
+                <select>
+                    <option><?php echo __('Hunter', $this->plugin_slug) ?></option>
+                    <option><?php echo __('Warrior', $this->plugin_slug) ?></option>
+                    <option><?php echo __('Mage', $this->plugin_slug) ?></option>
+                </select>
         </p>
         <?php
     }
