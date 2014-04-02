@@ -49,6 +49,7 @@ class PlayfulCharacters {
 
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
+        add_action('init', array($this, 'register_post_types'));
 
         // Activate plugin when new blog is added
         add_action('wpmu_new_blog', array($this, 'activate_new_site'));
@@ -173,7 +174,8 @@ class PlayfulCharacters {
         $classes = pfwp_get_option('character_classes');
         ?>
         <p>
-            <label for="race"><?php echo __('Sex', $this->plugin_slug) ?><br />
+            The Playful-Characters plugin will ask you for optional character creation here later
+           <!-- <label for="race"><?php echo __('Sex', $this->plugin_slug) ?><br />
                 <select>
                     <option><?php echo __('Male', $this->plugin_slug) ?></option>
                     <option><?php echo __('Female', $this->plugin_slug) ?></option>
@@ -197,8 +199,112 @@ class PlayfulCharacters {
                     <option><?php echo __('Warrior', $this->plugin_slug) ?></option>
                     <option><?php echo __('Mage', $this->plugin_slug) ?></option>
                 </select>
+            -->
         </p>
         <?php
+    }
+
+    public function register_post_types() {
+        $labels = array(
+            'name' => _x('Characters', 'post type general name', $this->plugin_slug),
+            'singular_name' => _x('Character', 'post type singular name', $this->plugin_slug),
+            'menu_name' => _x('Characters', 'admin menu', $this->plugin_slug),
+            'name_admin_bar' => _x('Characters', 'add new on admin bar', $this->plugin_slug),
+            'add_new' => _x('Add New', 'book', $this->plugin_slug),
+            'add_new_item' => __('Add New Character', $this->plugin_slug),
+            'new_item' => __('New Character', $this->plugin_slug),
+            'edit_item' => __('Edit Character', $this->plugin_slug),
+            'view_item' => __('View Character', $this->plugin_slug),
+            'all_items' => __('All Characters', $this->plugin_slug),
+            'search_items' => __('Search Characters', $this->plugin_slug),
+            'parent_item_colon' => __('Parent Characters:', $this->plugin_slug),
+            'not_found' => __('No characters found.', $this->plugin_slug),
+            'not_found_in_trash' => __('No characters found in Trash.', $this->plugin_slug),
+        );
+
+        $args = array(
+            'labels' => $labels,
+            'public' => true,
+            'publicly_queryable' => true,
+            'show_ui' => true,
+            'show_in_menu' => true,
+            'query_var' => true,
+            'rewrite' => array('slug' => 'character'),
+            'capability_type' => 'post',
+            'has_archive' => true,
+            'hierarchical' => false,
+            'menu_position' => null,
+            'supports' => array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments')
+        );
+
+        register_post_type('character', $args);
+
+        $labels = array(
+            'name' => _x('Races', 'post type general name', $this->plugin_slug),
+            'singular_name' => _x('Race', 'post type singular name', $this->plugin_slug),
+            'menu_name' => _x('Races', 'admin menu', $this->plugin_slug),
+            'all_items' => __('All Races', $this->plugin_slug),
+            'edit_item' => __('Edit Race', $this->plugin_slug),
+            'view_item' => __('View Race', $this->plugin_slug),
+            'update_item' => __('Update Race', $this->plugin_slug),
+            'add_new_item' => __('Add New Race', $this->plugin_slug),
+            'new_item_name' => __('New Race', $this->plugin_slug),
+            'parent_item' => __('Parent Races:', $this->plugin_slug),
+            'parent_item_colon' => __('Parent Races:', $this->plugin_slug),
+            'search_items' => __('Search Races', $this->plugin_slug),
+            'popular_items' => __('Popular Races', $this->plugin_slug),
+            'separate_items_with_commas' => __('Separate Races with commas', $this->plugin_slug),
+            'add_or_remove_items' => __('Add or remove Races.', $this->plugin_slug),
+            'choose_from_most_used' => __('Choose from most used Races.', $this->plugin_slug),
+            'not_found' => __('No Races found.', $this->plugin_slug),
+        );
+        // create a new taxonomy
+        register_taxonomy(
+                'races', 'character', array(
+            'label' => __('Race'),
+            'labels' => $labels,
+            'rewrite' => array('slug' => 'race'),
+            'capabilities' => array(
+                'manage__terms' => 'edit_posts',
+                'edit_terms' => 'manage_categories',
+                'delete_terms' => 'manage_categories',
+                'assign_terms' => 'edit_posts'
+            )
+                )
+        );
+        $labels = array(
+            'name' => _x('Classes', 'post type general name', $this->plugin_slug),
+            'singular_name' => _x('Class', 'post type singular name', $this->plugin_slug),
+            'menu_name' => _x('Classes', 'admin menu', $this->plugin_slug),
+            'all_items' => __('All Classes', $this->plugin_slug),
+            'edit_item' => __('Edit Classes', $this->plugin_slug),
+            'view_item' => __('View Class', $this->plugin_slug),
+            'update_item' => __('Update Class', $this->plugin_slug),
+            'add_new_item' => __('Add New Class', $this->plugin_slug),
+            'new_item_name' => __('New Class', $this->plugin_slug),
+            'parent_item' => __('Parent Classes:', $this->plugin_slug),
+            'parent_item_colon' => __('Parent Classes:', $this->plugin_slug),
+            'search_items' => __('Search Classes', $this->plugin_slug),
+            'popular_items' => __('Popular Classes', $this->plugin_slug),
+            'separate_items_with_commas' => __('Separate Classes with commas', $this->plugin_slug),
+            'add_or_remove_items' => __('Add or remove Classes.', $this->plugin_slug),
+            'choose_from_most_used' => __('Choose from most used Classes.', $this->plugin_slug),
+            'not_found' => __('No Classes found.', $this->plugin_slug),
+        );
+        // create a new taxonomy
+        register_taxonomy(
+                'classes', 'character', array(
+            'label' => __('Class'),
+            'labels' => $labels,
+            'rewrite' => array('slug' => 'class'),
+            'capabilities' => array(
+                'manage__terms' => 'edit_posts',
+                'edit_terms' => 'manage_categories',
+                'delete_terms' => 'manage_categories',
+                'assign_terms' => 'edit_posts'
+            )
+                )
+        );
     }
 
 }

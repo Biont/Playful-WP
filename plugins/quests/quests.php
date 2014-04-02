@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The WordPress Plugin Boilerplate.
  *
@@ -26,4 +27,3 @@
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 ?>
-QUESTS!!!!!<p>

@@ -84,10 +84,10 @@ class PlayfulWP {
      */
     private function __construct() {
 
+        $this->load_plugins();
+
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
-        add_action('init', array($this, 'load_plugins'));
-
         // Activate plugin when new blog is added
         add_action('wpmu_new_blog', array($this, 'activate_new_site'));
 
@@ -366,7 +366,7 @@ class PlayfulWP {
     }
 
     public function shutdown() {
-        if ($self::settings_changed) {
+        if (self::$settings_changed) {
 
             global $wpdb;
 

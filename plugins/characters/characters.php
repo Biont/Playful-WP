@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The WordPress Plugin Boilerplate.
  *
@@ -56,7 +57,6 @@ if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX )) {
     PlayfulCharacterAdmin::get_instance();
 }
 ?>
-CHARAKTERE !!!!!!<p>
 
 
 
