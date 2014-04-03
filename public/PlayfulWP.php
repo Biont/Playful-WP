@@ -370,9 +370,9 @@ class PlayfulWP {
 
             global $wpdb;
 
-            foreach (self::$options as $index => $option) {
-
-            }
+//            foreach (self::$options as $index => $option) {
+//
+//            }
         }
     }
 

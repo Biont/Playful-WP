@@ -50,6 +50,7 @@ class PlayfulCharacters {
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
         add_action('init', array($this, 'register_post_types'));
+        add_action('init', array($this, 'add_tax_meta'));
 
         // Activate plugin when new blog is added
         add_action('wpmu_new_blog', array($this, 'activate_new_site'));
@@ -174,34 +175,153 @@ class PlayfulCharacters {
         $classes = pfwp_get_option('character_classes');
         ?>
         <p>
-            The Playful-Characters plugin will ask you for optional character creation here later
-           <!-- <label for="race"><?php echo __('Sex', $this->plugin_slug) ?><br />
-                <select>
-                    <option><?php echo __('Male', $this->plugin_slug) ?></option>
-                    <option><?php echo __('Female', $this->plugin_slug) ?></option>
-                </select>
-        </p>
+            <label for="char_name"><?php echo __('Character Name', $this->plugin_slug) ?></label>
+            <input type="text" name="char_name">
         <p>
+            <label for="race"><?php echo __('Race', $this->plugin_slug) ?></label>
+            <?php
+            $args = array(
+                'hide_empty' => 0,
+                'name' => 'race',
+                'class' => 'race dropdown',
+                'taxonomy' => 'races',
+            );
 
+            wp_dropdown_categories($args);
+            ?>
         <p>
-            <label for="race"><?php echo __('Race', $this->plugin_slug) ?><br />
-                <select>
-                    <option><?php echo __('Elf', $this->plugin_slug) ?></option>
-                    <option><?php echo __('Human', $this->plugin_slug) ?></option>
-                    <option><?php echo __('Gnome', $this->plugin_slug) ?></option>
-                </select>
-        </p>
+            <label for="class"><?php echo __('Class', $this->plugin_slug) ?></label>
+            <?php
+            $args = array(
+                'hide_empty' => 0,
+                'name' => 'class',
+                'class' => 'class dropdown',
+                'taxonomy' => 'classes',
+            );
 
-        <p>
-            <label for="race"><?php echo __('Class', $this->plugin_slug) ?><br />
-                <select>
-                    <option><?php echo __('Hunter', $this->plugin_slug) ?></option>
-                    <option><?php echo __('Warrior', $this->plugin_slug) ?></option>
-                    <option><?php echo __('Mage', $this->plugin_slug) ?></option>
-                </select>
-            -->
+            wp_dropdown_categories($args);
+            ?>
+
         </p>
         <?php
+    }
+
+    public function add_tax_meta() {
+        // Make sure there's no errors when the plugin is deactivated or during upgrade
+        if (!class_exists('RW_Taxonomy_Meta'))
+            return;
+
+        $meta_sections = array();
+
+// First meta section
+        $meta_sections[] = array(
+            'title' => __('Additional Info', $this->plugin_slug), // section title
+            'taxonomies' => array('races', 'classes'), // list of taxonomies. Default is array('category', 'post_tag'). Optional
+            'id' => 'option_name', // ID of each section, will be the option name
+            'fields' => array(// List of meta fields
+// TEXT
+                array(
+                    'name' => 'Text', // field name
+                    'desc' => 'Simple text field', // field description, optional
+                    'id' => 'text', // field id, i.e. the meta key
+                    'type' => 'text', // field type
+                    'std' => 'Text', // default value, optional
+                ),
+// TEXTAREA
+                array(
+                    'name' => 'Textarea',
+                    'id' => 'textarea',
+                    'type' => 'textarea',
+                ),
+// SELECT
+                array(
+                    'name' => 'Select',
+                    'id' => 'select',
+                    'type' => 'select',
+                    'options' => array(// Array of value => label pairs for radio options
+                        'value1' => 'Label 1',
+                        'value2' => 'Label 2'
+                    ),
+                ),
+// RADIO
+                array(
+                    'name' => 'Radio',
+                    'id' => 'radio',
+                    'type' => 'radio',
+                    'options' => array(// Array of value => label pairs for radio options
+                        'value1' => 'Label 1',
+                        'value2' => 'Label 2'
+                    ),
+                ),
+// CHECKBOX
+                array(
+                    'name' => 'Checkbox',
+                    'id' => 'checkbox',
+                    'type' => 'checkbox',
+                ),
+            ),
+        );
+
+// Second meta section
+        $meta_sections[] = array(
+            'title' => 'Advanced Fields',
+            'id' => 'option_name',
+            'fields' => array(
+// CHECKBOX LIST
+                array(
+                    'name' => 'Checkbox list',
+                    'id' => 'checkbox_list',
+                    'type' => 'checkbox_list',
+                    'options' => array(// Array of value => label pairs for radio options
+                        'value1' => 'Label 1',
+                        'value2' => 'Label 2'
+                    ),
+                    'desc' => 'What do you do in free time?'
+                ),
+// WYSIWYG
+                array(
+                    'name' => 'WYSIWYG Editor',
+                    'id' => 'wysiwyg',
+                    'type' => 'wysiwyg',
+                ),
+// DATE PICKER
+                array(
+                    'name' => 'Date Picker',
+                    'id' => 'date',
+                    'type' => 'date',
+                    'format' => 'd MM, yy', // Date format, default yy-mm-dd. Optional. See: http://goo.gl/po8vf
+                ),
+// TIME PICKER
+                array(
+                    'name' => 'Time Picker',
+                    'id' => 'time',
+                    'type' => 'time',
+                    'format' => 'hh:mm:ss', // Time format, default hh:mm. Optional. See: http://goo.gl/hXHWz
+                ),
+// FILE
+                array(
+                    'name' => 'File',
+                    'id' => 'file',
+                    'type' => 'file',
+                ),
+// IMAGE
+                array(
+                    'name' => 'Image',
+                    'id' => 'image',
+                    'type' => 'image',
+                ),
+// COLOR PICKER
+                array(
+                    'name' => 'Color Picker',
+                    'id' => 'color',
+                    'type' => 'color',
+                ),
+            ),
+        );
+
+        foreach ($meta_sections as $meta_section) {
+            new RW_Taxonomy_Meta($meta_section);
+        }
     }
 
     public function register_post_types() {

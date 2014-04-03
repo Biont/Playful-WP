@@ -38,6 +38,7 @@ if (!defined('WPINC')) {
 $plugin_path = plugin_dir_path(__FILE__);
 require_once( $plugin_path . 'functions.php' );
 require_once( $plugin_path . 'public/PlayfulWP.php' );
+require_once( $plugin_path . 'lib/taxonomy_meta.php' );
 
 /*
  * Register hooks that are fired when the plugin is activated or deactivated.
