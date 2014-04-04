@@ -61,6 +61,7 @@ class PlayfulCharacterAdmin {
         // Add the options page and menu item.
 //        add_action('admin_init', array($this, 'register_settings'));
         // Add the options page and menu item.
+        add_action('admin_menu', array($this, 'register_settings'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
 
 
@@ -97,6 +98,13 @@ class PlayfulCharacterAdmin {
         }
 
         return self::$instance;
+    }
+
+    public function register_settings() {
+
+        register_setting('playful-characters-settings', 'is_single_character');
+        register_setting('playful-characters-settings', 'character_limit');
+        //Plugins
     }
 
     /**

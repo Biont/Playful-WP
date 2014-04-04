@@ -24,229 +24,232 @@
  */
 class PlayfulWPAdmin {
 
-	/**
-	 * Instance of this class.
-	 *
-	 * @since    1.0.0
-	 *
-	 * @var      object
-	 */
-	protected static $instance = null;
+    /**
+     * Instance of this class.
+     *
+     * @since    1.0.0
+     *
+     * @var      object
+     */
+    protected static $instance = null;
 
-	/**
-	 * Slug of the plugin screen.
-	 *
-	 * @since    1.0.0
-	 *
-	 * @var      string
-	 */
-	protected $plugin_screen_hook_suffix = null;
-	protected $settings = null;
+    /**
+     * Slug of the plugin screen.
+     *
+     * @since    1.0.0
+     *
+     * @var      string
+     */
+    protected $plugin_screen_hook_suffix = null;
+    protected $settings = null;
 
-	/**
-	 * All compatible plugins in the plugins folder
-	 *
-	 * @var array
-	 */
+    /**
+     * All compatible plugins in the plugins folder
+     *
+     * @var array
+     */
 //    protected $installed_plugins = null;
 
-	/**
-	 * Initialize the plugin by loading admin scripts & styles and adding a
-	 * settings page and menu.
-	 *
-	 * @since     1.0.0
-	 */
-	private function __construct() {
+    /**
+     * Initialize the plugin by loading admin scripts & styles and adding a
+     * settings page and menu.
+     *
+     * @since     1.0.0
+     */
+    private function __construct() {
 
-		/*
-		 * @TODO :
-		 *
-		 * - Uncomment following lines if the admin class should only be available for super admins
-		 */
-		/* if( ! is_super_admin() ) {
-		  return;
-		  } */
+        /*
+         * @TODO :
+         *
+         * - Uncomment following lines if the admin class should only be available for super admins
+         */
+        /* if( ! is_super_admin() ) {
+          return;
+          } */
 
-		/*
-		 * Call $plugin_slug from public plugin class.
-		 *
-		 * @TODO:
-		 *
-		 * - Rename "Plugin_Name" to the name of your initial plugin class
-		 *
-		 */
-		$plugin = PlayfulWP::get_instance();
-
-
-		$this->settings = PlayfulWPSettings::get_instance();
-		$this->plugin_slug = $plugin->get_plugin_slug();
+        /*
+         * Call $plugin_slug from public plugin class.
+         *
+         * @TODO:
+         *
+         * - Rename "Plugin_Name" to the name of your initial plugin class
+         *
+         */
+        $plugin = PlayfulWP::get_instance();
 
 
-
-
-		// Load admin style sheet and JavaScript.
-		add_action( 'admin_enqueue_scripts', array ( $this, 'enqueue_admin_styles' ) );
-		add_action( 'admin_enqueue_scripts', array ( $this, 'enqueue_admin_scripts' ) );
+        $this->settings = PlayfulWPSettings::get_instance();
+        $this->plugin_slug = $plugin->get_plugin_slug();
 
 
 
-		// Add an action link pointing to the options page.
-		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
-		add_filter( 'plugin_action_links_' . $plugin_basename, array ( $this, 'add_action_links' ) );
 
-		/*
-		 * Define custom functionality.
-		 *
-		 * Read more about actions and filters:
-		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-		 */
-		add_action( '@TODO', array ( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array ( $this, 'filter_method_name' ) );
-	}
+        // Load admin style sheet and JavaScript.
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
 
-	/**
-	 * Return an instance of this class.
-	 *
-	 * @since     1.0.0
-	 *
-	 * @return    object    A single instance of this class.
-	 */
-	public static function get_instance() {
 
-		/*
-		 * @TODO :
-		 *
-		 * - Uncomment following lines if the admin class should only be available for super admins
-		 */
-		/* if( ! is_super_admin() ) {
-		  return;
-		  } */
 
-		// If the single instance hasn't been set, set it now.
-		if ( null == self::$instance ) {
-			self::$instance = new self;
-		}
+        // Add an action link pointing to the options page.
+        $plugin_basename = plugin_basename(plugin_dir_path(__DIR__) . $this->plugin_slug . '.php');
+        add_filter('plugin_action_links_' . $plugin_basename, array($this, 'add_action_links'));
 
-		return self::$instance;
-	}
 
-	/**
-	 * Returns an array  of all plugins in the plugins folder
-	 * @TODO: Check for existence of file_data?
-	 * @return type
-	 */
-	public function get_installed_plugins() {
-		if ( $this->installed_plugins == null ) {
 
-			foreach ( glob( dirname( plugin_dir_path( __FILE__ ) ) . '/plugins/*', GLOB_ONLYDIR ) as $plugin ) {
-				if ( file_exists( $filename = $plugin . '/' . basename( $plugin ) . '.php' ) )
-					$data = get_file_data( $filename, array (
-						'Name' => 'PFWP-Plugin Name',
-						'PluginURI' => 'Plugin URI',
-						'Description' => 'Description',
-						'Author' => 'Author',
-						'AuthorURI' => 'Author URI',
-						'Version' => 'Version',
-						'Template' => 'Template',
-						'Status' => 'Status',
-						'Tags' => 'Tags',
-						'TextDomain' => 'Text Domain',
-						'DomainPath' => 'Domain Path',
-					) );
 
-				$data[ 'File' ] = basename( $filename );
+        /*
+         * Define custom functionality.
+         *
+         * Read more about actions and filters:
+         * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
+         */
+        add_action('@TODO', array($this, 'action_method_name'));
+        add_filter('@TODO', array($this, 'filter_method_name'));
+    }
 
-				$this->installed_plugins[] = $data;
-			}
-		}
+    /**
+     * Return an instance of this class.
+     *
+     * @since     1.0.0
+     *
+     * @return    object    A single instance of this class.
+     */
+    public static function get_instance() {
 
-		return $this->installed_plugins;
-	}
+        /*
+         * @TODO :
+         *
+         * - Uncomment following lines if the admin class should only be available for super admins
+         */
+        /* if( ! is_super_admin() ) {
+          return;
+          } */
 
-	/**
-	 * Register and enqueue admin-specific style sheet.
-	 *
-	 * @TODO:
-	 *
-	 * - Rename "Plugin_Name" to the name your plugin
-	 *
-	 * @since     1.0.0
-	 *
-	 * @return    null    Return early if no settings page is registered.
-	 */
-	public function enqueue_admin_styles() {
+        // If the single instance hasn't been set, set it now.
+        if (null == self::$instance) {
+            self::$instance = new self;
+        }
 
-		if ( !isset( $this->plugin_screen_hook_suffix ) ) {
-			return;
-		}
+        return self::$instance;
+    }
 
-		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_style( $this->plugin_slug . '-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array (), PlayfulWP::VERSION );
-		}
-	}
+    /**
+     * Returns an array  of all plugins in the plugins folder
+     * @TODO: Check for existence of file_data?
+     * @return type
+     */
+    public function get_installed_plugins() {
+        if ($this->installed_plugins == null) {
 
-	/**
-	 * Register and enqueue admin-specific JavaScript.
-	 *
-	 * @TODO:
-	 *
-	 * - Rename "Plugin_Name" to the name your plugin
-	 *
-	 * @since     1.0.0
-	 *
-	 * @return    null    Return early if no settings page is registered.
-	 */
-	public function enqueue_admin_scripts() {
+            foreach (glob(dirname(plugin_dir_path(__FILE__)) . '/plugins/*', GLOB_ONLYDIR) as $plugin) {
+                if (file_exists($filename = $plugin . '/' . basename($plugin) . '.php'))
+                    $data = get_file_data($filename, array(
+                        'Name' => 'PFWP-Plugin Name',
+                        'PluginURI' => 'Plugin URI',
+                        'Description' => 'Description',
+                        'Author' => 'Author',
+                        'AuthorURI' => 'Author URI',
+                        'Version' => 'Version',
+                        'Template' => 'Template',
+                        'Status' => 'Status',
+                        'Tags' => 'Tags',
+                        'TextDomain' => 'Text Domain',
+                        'DomainPath' => 'Domain Path',
+                    ));
 
-		if ( !isset( $this->plugin_screen_hook_suffix ) ) {
-			return;
-		}
+                $data['File'] = basename($filename);
 
-		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array ( 'jquery' ), PlayfulWP::VERSION );
-		}
-	}
+                $this->installed_plugins[] = $data;
+            }
+        }
 
-	/**
-	 * Add settings action link to the plugins page.
-	 *
-	 * @since    1.0.0
-	 */
-	public function add_action_links( $links ) {
+        return $this->installed_plugins;
+    }
 
-		return array_merge(
-				array (
-			'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
-				), $links
-		);
-	}
+    /**
+     * Register and enqueue admin-specific style sheet.
+     *
+     * @TODO:
+     *
+     * - Rename "Plugin_Name" to the name your plugin
+     *
+     * @since     1.0.0
+     *
+     * @return    null    Return early if no settings page is registered.
+     */
+    public function enqueue_admin_styles() {
 
-	/**
-	 * NOTE:     Actions are points in the execution of a page or process
-	 *           lifecycle that WordPress fires.
-	 *
-	 *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
-	 *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function action_method_name() {
-		// @TODO: Define your action hook callback here
-	}
+        if (!isset($this->plugin_screen_hook_suffix)) {
+            return;
+        }
 
-	/**
-	 * NOTE:     Filters are points of execution in which WordPress modifies data
-	 *           before saving it or sending it to the browser.
-	 *
-	 *           Filters: http://codex.wordpress.org/Plugin_API#Filters
-	 *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function filter_method_name() {
-		// @TODO: Define your filter hook callback here
-	}
+        $screen = get_current_screen();
+        if ($this->plugin_screen_hook_suffix == $screen->id) {
+            wp_enqueue_style($this->plugin_slug . '-admin-styles', plugins_url('assets/css/admin.css', __FILE__), array(), PlayfulWP::VERSION);
+        }
+    }
+
+    /**
+     * Register and enqueue admin-specific JavaScript.
+     *
+     * @TODO:
+     *
+     * - Rename "Plugin_Name" to the name your plugin
+     *
+     * @since     1.0.0
+     *
+     * @return    null    Return early if no settings page is registered.
+     */
+    public function enqueue_admin_scripts() {
+
+        if (!isset($this->plugin_screen_hook_suffix)) {
+            return;
+        }
+
+        $screen = get_current_screen();
+        if ($this->plugin_screen_hook_suffix == $screen->id) {
+            wp_enqueue_script($this->plugin_slug . '-admin-script', plugins_url('assets/js/admin.js', __FILE__), array('jquery'), PlayfulWP::VERSION);
+        }
+    }
+
+    /**
+     * Add settings action link to the plugins page.
+     *
+     * @since    1.0.0
+     */
+    public function add_action_links($links) {
+
+        return array_merge(
+                array(
+            'settings' => '<a href="' . admin_url('options-general.php?page=' . $this->plugin_slug) . '">' . __('Settings', $this->plugin_slug) . '</a>'
+                ), $links
+        );
+    }
+
+    /**
+     * NOTE:     Actions are points in the execution of a page or process
+     *           lifecycle that WordPress fires.
+     *
+     *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
+     *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
+     *
+     * @since    1.0.0
+     */
+    public function action_method_name() {
+        // @TODO: Define your action hook callback here
+    }
+
+    /**
+     * NOTE:     Filters are points of execution in which WordPress modifies data
+     *           before saving it or sending it to the browser.
+     *
+     *           Filters: http://codex.wordpress.org/Plugin_API#Filters
+     *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
+     *
+     * @since    1.0.0
+     */
+    public function filter_method_name() {
+        // @TODO: Define your filter hook callback here
+    }
 
 }

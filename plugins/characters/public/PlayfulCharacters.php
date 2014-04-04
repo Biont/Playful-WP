@@ -20,6 +20,7 @@ class PlayfulCharacters {
      * @var      object
      */
     protected static $instance = null;
+    protected $current_character = null;
 
     /**
      * Return an instance of this class.
@@ -50,6 +51,7 @@ class PlayfulCharacters {
         // Load plugin text domain
         add_action('init', array($this, 'load_plugin_textdomain'));
         add_action('init', array($this, 'register_post_types'));
+        add_action('init', array($this, 'get_current_character'));
         add_action('init', array($this, 'add_tax_meta'));
 
         // Activate plugin when new blog is added
@@ -59,6 +61,8 @@ class PlayfulCharacters {
 //        add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
 //        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 
+        add_action('user_register', array($this, 'on_user_register'), 10, 1);
+        add_action('save_post', array($this, 'on_save_post'));
 
         /**
          * Load active plugins from settings and initialize them
@@ -169,14 +173,24 @@ class PlayfulCharacters {
         load_plugin_textdomain($domain, FALSE, basename(plugin_dir_path(dirname(__FILE__))) . '/languages/');
     }
 
+    /**
+     * Add a character creator to the registration form
+     *
+     */
     public function add_register_form() {
 
         $races = pfwp_get_option('character_races');
         $classes = pfwp_get_option('character_classes');
         ?>
         <p>
+            <label for="char_name"><?php echo __('Create a Character?', $this->plugin_slug) ?></label>
+            <input type="checkbox" name="create_character">
+        <p>
             <label for="char_name"><?php echo __('Character Name', $this->plugin_slug) ?></label>
             <input type="text" name="char_name">
+        <p>
+            <label for="char_name"><?php echo __('Character Description', $this->plugin_slug) ?></label>
+            <input type="text" name="char_desc">
         <p>
             <label for="race"><?php echo __('Race', $this->plugin_slug) ?></label>
             <?php
@@ -204,6 +218,34 @@ class PlayfulCharacters {
 
         </p>
         <?php
+    }
+
+    /**
+     * Hook into user registration to create a new character if the user chose to fill in the character creator
+     * @param type $user_id
+     */
+    function on_user_register($user_id) {
+        error_log('this hook is called');
+        echo '<pre>' . print_r($_POST) . '</pre>';
+        if (isset($_POST['create_character'])) {
+
+
+            $character = array(
+                'post_title' => $_POST['char_name'],
+                'post_type' => 'character',
+                'post_content' => $_POST['char_desc'],
+                'post_status' => 'publish',
+                'post_author' => $user_id,
+            );
+            $id = wp_insert_post($character);
+            //If no user is logged in, you cannot insert taxonomies directly, so we have to do it after inserting
+            wp_set_post_terms($id, get_term_by('id', $_POST['race'], 'races')->name, 'races', false);
+            wp_set_post_terms($id, get_term_by('id', $_POST['class'], 'classes')->name, 'classes', false);
+
+
+            update_user_meta($user_id, 'playful_characters', $id);
+            update_user_meta($user_id, 'playful_current_character', $id);
+        }
     }
 
     public function add_tax_meta() {
@@ -324,6 +366,9 @@ class PlayfulCharacters {
         }
     }
 
+    /**
+     * Register the Character post type and class and race taxonomies
+     */
     public function register_post_types() {
         $labels = array(
             'name' => _x('Characters', 'post type general name', $this->plugin_slug),
@@ -425,6 +470,51 @@ class PlayfulCharacters {
             )
                 )
         );
+    }
+
+    /**
+     * Get the current character id from user meta and load the according character post by id
+     *
+     */
+    public function get_current_character() {
+        $meta = get_user_meta(get_current_user_id());
+        if (isset($meta['playful_current_character'])) {
+            $this->current_character = get_post(intval($meta['playful_current_character']));
+        } else {
+            echo 'You do not have a character. You should create one';
+        }
+
+
+        if (isset($meta['playful_characters'])) {
+            echo 'Your character ids:';
+            echo '<pre>' . print_r($meta = get_user_meta(get_current_user_id(), 'playful_characters')) . '</pre>';
+        }
+    }
+
+    /**
+     * Hook into post saving, check if a character is saved and update user meta data accordingly
+     *
+     * @global type $post
+     * @param type $id
+     * @return type
+     */
+    public function on_save_post($id) {
+        global $post;
+
+        if ($post->post_type != 'character') {
+            return;
+        }
+
+//        $user = get_user_by('id', $post->post_author);
+        $meta = get_user_meta($post->post_author);
+
+        if (isset($meta['playful_characters']) && in_array($id, $chars = $meta['playful_characters'])) {
+            $chars[] = $id;
+            update_user_meta($post->post_author, 'playful_characters', $chars);
+        } else {
+            update_user_meta($post->post_author, 'playful_characters', array($id));
+        }
+        update_user_meta($post->post_author, 'playful_current_character', $id);
     }
 
 }
