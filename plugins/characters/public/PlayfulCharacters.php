@@ -32,7 +32,7 @@ class PlayfulCharacters {
     public static function get_instance() {
 
         // If the single instance hasn't been set, set it now.
-        if (null == self::$instance) {
+        if ( null == self::$instance ) {
             self::$instance = new self;
         }
 
@@ -49,20 +49,19 @@ class PlayfulCharacters {
         $this->plugin_slug = PlayfulWP::get_instance()->get_plugin_slug();
 
         // Load plugin text domain
-        add_action('init', array($this, 'load_plugin_textdomain'));
-        add_action('init', array($this, 'register_post_types'));
-        add_action('init', array($this, 'get_current_character'));
-        add_action('init', array($this, 'add_tax_meta'));
+        add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+        add_action( 'init', array( $this, 'register_post_types' ) );
+        add_action( 'init', array( $this, 'add_tax_meta' ) );
 
         // Activate plugin when new blog is added
-        add_action('wpmu_new_blog', array($this, 'activate_new_site'));
+        add_action( 'wpmu_new_blog', array( $this, 'activate_new_site' ) );
 
 //        // Load public-facing style sheet and JavaScript.
 //        add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
 //        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 
-        add_action('user_register', array($this, 'on_user_register'), 10, 1);
-        add_action('save_post', array($this, 'on_save_post'));
+        add_action( 'user_register', array( $this, 'on_user_register' ), 10, 1 );
+        add_action( 'save_post', array( $this, 'on_save_post' ) );
 
         /**
          * Load active plugins from settings and initialize them
@@ -70,8 +69,8 @@ class PlayfulCharacters {
         /* Define custom functionality.
          * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
          */
-        add_action('register_form', array($this, 'add_register_form'));
-        add_filter('@TODO', array($this, 'filter_method_name'));
+        add_action( 'register_form', array( $this, 'add_register_form' ) );
+        add_filter( '@TODO', array( $this, 'filter_method_name' ) );
     }
 
     /**
@@ -84,18 +83,18 @@ class PlayfulCharacters {
      *                                       WPMU is disabled or plugin is
      *                                       activated on an individual blog.
      */
-    public static function activate($network_wide) {
+    public static function activate( $network_wide ) {
 
-        if (function_exists('is_multisite') && is_multisite()) {
+        if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 
-            if ($network_wide) {
+            if ( $network_wide ) {
 
                 // Get all blog ids
                 $blog_ids = self::get_blog_ids();
 
-                foreach ($blog_ids as $blog_id) {
+                foreach ( $blog_ids as $blog_id ) {
 
-                    switch_to_blog($blog_id);
+                    switch_to_blog( $blog_id );
                     self::single_activate();
                 }
 
@@ -118,18 +117,18 @@ class PlayfulCharacters {
      *                                       WPMU is disabled or plugin is
      *                                       deactivated on an individual blog.
      */
-    public static function deactivate($network_wide) {
+    public static function deactivate( $network_wide ) {
 
-        if (function_exists('is_multisite') && is_multisite()) {
+        if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 
-            if ($network_wide) {
+            if ( $network_wide ) {
 
                 // Get all blog ids
                 $blog_ids = self::get_blog_ids();
 
-                foreach ($blog_ids as $blog_id) {
+                foreach ( $blog_ids as $blog_id ) {
 
-                    switch_to_blog($blog_id);
+                    switch_to_blog( $blog_id );
                     self::single_deactivate();
                 }
 
@@ -167,10 +166,10 @@ class PlayfulCharacters {
      */
     public function load_plugin_textdomain() {
         $domain = $this->plugin_slug;
-        $locale = apply_filters('plugin_locale', get_locale(), $domain);
+        $locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 
-        load_textdomain($domain, trailingslashit(WP_LANG_DIR) . $domain . '/' . $domain . '-' . $locale . '.mo');
-        load_plugin_textdomain($domain, FALSE, basename(plugin_dir_path(dirname(__FILE__))) . '/languages/');
+        load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
+        load_plugin_textdomain( $domain, FALSE, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/' );
     }
 
     /**
@@ -178,43 +177,37 @@ class PlayfulCharacters {
      *
      */
     public function add_register_form() {
-
-        $races = pfwp_get_option('character_races');
-        $classes = pfwp_get_option('character_classes');
         ?>
         <p>
-            <label for="char_name"><?php echo __('Create a Character?', $this->plugin_slug) ?></label>
+            <label for="char_name"><?php echo __( 'Create a Character?', $this->plugin_slug ) ?></label>
             <input type="checkbox" name="create_character">
         <p>
-            <label for="char_name"><?php echo __('Character Name', $this->plugin_slug) ?></label>
+            <label for="char_name"><?php echo __( 'Character Name', $this->plugin_slug ) ?></label>
             <input type="text" name="char_name">
         <p>
-            <label for="char_name"><?php echo __('Character Description', $this->plugin_slug) ?></label>
-            <input type="text" name="char_desc">
+            <label for="char_desc"><?php echo __( 'Character Description', $this->plugin_slug ) ?></label>
+            <input type="textarea" name="char_desc">
         <p>
-            <label for="race"><?php echo __('Race', $this->plugin_slug) ?></label>
-            <?php
-            $args = array(
-                'hide_empty' => 0,
-                'name' => 'race',
-                'class' => 'race dropdown',
-                'taxonomy' => 'races',
-            );
 
-            wp_dropdown_categories($args);
-            ?>
-        <p>
-            <label for="class"><?php echo __('Class', $this->plugin_slug) ?></label>
             <?php
-            $args = array(
-                'hide_empty' => 0,
-                'name' => 'class',
-                'class' => 'class dropdown',
-                'taxonomy' => 'classes',
-            );
+            // Get all taxonomies associated with the character post type and create a dropdown for each of them
 
-            wp_dropdown_categories($args);
-            ?>
+            $taxonomies = get_object_taxonomies( 'character', 'objects' );
+
+            foreach ( $taxonomies as $name => $taxonomy ) {
+                ?><label for="race"><?php echo $taxonomy->labels->singular_name ?></label><?php
+                $args = array(
+                    'hide_empty' => 0,
+                    'name' => $name,
+                    'class' => $name . ' dropdown',
+                    'taxonomy' => $name,
+                );
+
+                wp_dropdown_categories( $args );
+                ?><p><?php
+                }
+                ?>
+
 
         </p>
         <?php
@@ -224,43 +217,45 @@ class PlayfulCharacters {
      * Hook into user registration to create a new character if the user chose to fill in the character creator
      * @param type $user_id
      */
-    function on_user_register($user_id) {
-        error_log('this hook is called');
-        echo '<pre>' . print_r($_POST) . '</pre>';
-        if (isset($_POST['create_character'])) {
+    function on_user_register( $user_id ) {
+        error_log( 'this hook is called' );
+        echo '<pre>' . print_r( $_POST ) . '</pre>';
+        if ( isset( $_POST[ 'create_character' ] ) ) {
 
 
             $character = array(
-                'post_title' => $_POST['char_name'],
+                'post_title' => $_POST[ 'char_name' ],
                 'post_type' => 'character',
-                'post_content' => $_POST['char_desc'],
+                'post_content' => $_POST[ 'char_desc' ],
                 'post_status' => 'publish',
                 'post_author' => $user_id,
             );
-            $id = wp_insert_post($character);
+            $id = wp_insert_post( $character );
             //If no user is logged in, you cannot insert taxonomies directly, so we have to do it after inserting
-            wp_set_post_terms($id, get_term_by('id', $_POST['race'], 'races')->name, 'races', false);
-            wp_set_post_terms($id, get_term_by('id', $_POST['class'], 'classes')->name, 'classes', false);
+            //TODO: Iterate over the taxonomies to plugins can add custom ones
+            wp_set_post_terms( $id, get_term_by( 'id', $_POST[ 'races' ], 'races' )->name, 'races', false );
+            wp_set_post_terms( $id, get_term_by( 'id', $_POST[ 'classes' ], 'classes' )->name, 'classes', false );
 
 
-            update_user_meta($user_id, 'playful_characters', $id);
-            update_user_meta($user_id, 'playful_current_character', $id);
+            update_user_meta( $user_id, 'playful_characters', $id );
+            update_user_meta( $user_id, 'playful_current_character', $id );
+            do_action( 'playful_character_created', $id );
         }
     }
 
     public function add_tax_meta() {
         // Make sure there's no errors when the plugin is deactivated or during upgrade
-        if (!class_exists('RW_Taxonomy_Meta'))
+        if ( !class_exists( 'RW_Taxonomy_Meta' ) )
             return;
 
         $meta_sections = array();
 
 // First meta section
         $meta_sections[] = array(
-            'title' => __('Additional Info', $this->plugin_slug), // section title
-            'taxonomies' => array('races', 'classes'), // list of taxonomies. Default is array('category', 'post_tag'). Optional
+            'title' => __( 'Additional Info', $this->plugin_slug ), // section title
+            'taxonomies' => array( 'races', 'classes' ), // list of taxonomies. Default is array('category', 'post_tag'). Optional
             'id' => 'option_name', // ID of each section, will be the option name
-            'fields' => array(// List of meta fields
+            'fields' => array( // List of meta fields
 // TEXT
                 array(
                     'name' => 'Text', // field name
@@ -280,7 +275,7 @@ class PlayfulCharacters {
                     'name' => 'Select',
                     'id' => 'select',
                     'type' => 'select',
-                    'options' => array(// Array of value => label pairs for radio options
+                    'options' => array( // Array of value => label pairs for radio options
                         'value1' => 'Label 1',
                         'value2' => 'Label 2'
                     ),
@@ -290,7 +285,7 @@ class PlayfulCharacters {
                     'name' => 'Radio',
                     'id' => 'radio',
                     'type' => 'radio',
-                    'options' => array(// Array of value => label pairs for radio options
+                    'options' => array( // Array of value => label pairs for radio options
                         'value1' => 'Label 1',
                         'value2' => 'Label 2'
                     ),
@@ -314,7 +309,7 @@ class PlayfulCharacters {
                     'name' => 'Checkbox list',
                     'id' => 'checkbox_list',
                     'type' => 'checkbox_list',
-                    'options' => array(// Array of value => label pairs for radio options
+                    'options' => array( // Array of value => label pairs for radio options
                         'value1' => 'Label 1',
                         'value2' => 'Label 2'
                     ),
@@ -361,8 +356,8 @@ class PlayfulCharacters {
             ),
         );
 
-        foreach ($meta_sections as $meta_section) {
-            new RW_Taxonomy_Meta($meta_section);
+        foreach ( $meta_sections as $meta_section ) {
+            new RW_Taxonomy_Meta( $meta_section );
         }
     }
 
@@ -371,20 +366,20 @@ class PlayfulCharacters {
      */
     public function register_post_types() {
         $labels = array(
-            'name' => _x('Characters', 'post type general name', $this->plugin_slug),
-            'singular_name' => _x('Character', 'post type singular name', $this->plugin_slug),
-            'menu_name' => _x('Characters', 'admin menu', $this->plugin_slug),
-            'name_admin_bar' => _x('Characters', 'add new on admin bar', $this->plugin_slug),
-            'add_new' => _x('Add New', 'book', $this->plugin_slug),
-            'add_new_item' => __('Add New Character', $this->plugin_slug),
-            'new_item' => __('New Character', $this->plugin_slug),
-            'edit_item' => __('Edit Character', $this->plugin_slug),
-            'view_item' => __('View Character', $this->plugin_slug),
-            'all_items' => __('All Characters', $this->plugin_slug),
-            'search_items' => __('Search Characters', $this->plugin_slug),
-            'parent_item_colon' => __('Parent Characters:', $this->plugin_slug),
-            'not_found' => __('No characters found.', $this->plugin_slug),
-            'not_found_in_trash' => __('No characters found in Trash.', $this->plugin_slug),
+            'name' => _x( 'Characters', 'post type general name', $this->plugin_slug ),
+            'singular_name' => _x( 'Character', 'post type singular name', $this->plugin_slug ),
+            'menu_name' => _x( 'Characters', 'admin menu', $this->plugin_slug ),
+            'name_admin_bar' => _x( 'Characters', 'add new on admin bar', $this->plugin_slug ),
+            'add_new' => _x( 'Add New', 'book', $this->plugin_slug ),
+            'add_new_item' => __( 'Add New Character', $this->plugin_slug ),
+            'new_item' => __( 'New Character', $this->plugin_slug ),
+            'edit_item' => __( 'Edit Character', $this->plugin_slug ),
+            'view_item' => __( 'View Character', $this->plugin_slug ),
+            'all_items' => __( 'All Characters', $this->plugin_slug ),
+            'search_items' => __( 'Search Characters', $this->plugin_slug ),
+            'parent_item_colon' => __( 'Parent Characters:', $this->plugin_slug ),
+            'not_found' => __( 'No characters found.', $this->plugin_slug ),
+            'not_found_in_trash' => __( 'No characters found in Trash.', $this->plugin_slug ),
         );
 
         $args = array(
@@ -394,41 +389,41 @@ class PlayfulCharacters {
             'show_ui' => true,
             'show_in_menu' => true,
             'query_var' => true,
-            'rewrite' => array('slug' => 'character'),
+            'rewrite' => array( 'slug' => 'character' ),
             'capability_type' => 'post',
             'has_archive' => true,
             'hierarchical' => false,
             'menu_position' => null,
-            'supports' => array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments')
+            'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
         );
 
-        register_post_type('character', $args);
+        register_post_type( 'character', $args );
 
         $labels = array(
-            'name' => _x('Races', 'post type general name', $this->plugin_slug),
-            'singular_name' => _x('Race', 'post type singular name', $this->plugin_slug),
-            'menu_name' => _x('Races', 'admin menu', $this->plugin_slug),
-            'all_items' => __('All Races', $this->plugin_slug),
-            'edit_item' => __('Edit Race', $this->plugin_slug),
-            'view_item' => __('View Race', $this->plugin_slug),
-            'update_item' => __('Update Race', $this->plugin_slug),
-            'add_new_item' => __('Add New Race', $this->plugin_slug),
-            'new_item_name' => __('New Race', $this->plugin_slug),
-            'parent_item' => __('Parent Races:', $this->plugin_slug),
-            'parent_item_colon' => __('Parent Races:', $this->plugin_slug),
-            'search_items' => __('Search Races', $this->plugin_slug),
-            'popular_items' => __('Popular Races', $this->plugin_slug),
-            'separate_items_with_commas' => __('Separate Races with commas', $this->plugin_slug),
-            'add_or_remove_items' => __('Add or remove Races.', $this->plugin_slug),
-            'choose_from_most_used' => __('Choose from most used Races.', $this->plugin_slug),
-            'not_found' => __('No Races found.', $this->plugin_slug),
+            'name' => _x( 'Races', 'post type general name', $this->plugin_slug ),
+            'singular_name' => _x( 'Race', 'post type singular name', $this->plugin_slug ),
+            'menu_name' => _x( 'Races', 'admin menu', $this->plugin_slug ),
+            'all_items' => __( 'All Races', $this->plugin_slug ),
+            'edit_item' => __( 'Edit Race', $this->plugin_slug ),
+            'view_item' => __( 'View Race', $this->plugin_slug ),
+            'update_item' => __( 'Update Race', $this->plugin_slug ),
+            'add_new_item' => __( 'Add New Race', $this->plugin_slug ),
+            'new_item_name' => __( 'New Race', $this->plugin_slug ),
+            'parent_item' => __( 'Parent Races:', $this->plugin_slug ),
+            'parent_item_colon' => __( 'Parent Races:', $this->plugin_slug ),
+            'search_items' => __( 'Search Races', $this->plugin_slug ),
+            'popular_items' => __( 'Popular Races', $this->plugin_slug ),
+            'separate_items_with_commas' => __( 'Separate Races with commas', $this->plugin_slug ),
+            'add_or_remove_items' => __( 'Add or remove Races.', $this->plugin_slug ),
+            'choose_from_most_used' => __( 'Choose from most used Races.', $this->plugin_slug ),
+            'not_found' => __( 'No Races found.', $this->plugin_slug ),
         );
         // create a new taxonomy
         register_taxonomy(
                 'races', 'character', array(
-            'label' => __('Race'),
+            'label' => __( 'Race' ),
             'labels' => $labels,
-            'rewrite' => array('slug' => 'race'),
+            'rewrite' => array( 'slug' => 'race' ),
             'capabilities' => array(
                 'manage__terms' => 'edit_posts',
                 'edit_terms' => 'manage_categories',
@@ -438,30 +433,30 @@ class PlayfulCharacters {
                 )
         );
         $labels = array(
-            'name' => _x('Classes', 'post type general name', $this->plugin_slug),
-            'singular_name' => _x('Class', 'post type singular name', $this->plugin_slug),
-            'menu_name' => _x('Classes', 'admin menu', $this->plugin_slug),
-            'all_items' => __('All Classes', $this->plugin_slug),
-            'edit_item' => __('Edit Classes', $this->plugin_slug),
-            'view_item' => __('View Class', $this->plugin_slug),
-            'update_item' => __('Update Class', $this->plugin_slug),
-            'add_new_item' => __('Add New Class', $this->plugin_slug),
-            'new_item_name' => __('New Class', $this->plugin_slug),
-            'parent_item' => __('Parent Classes:', $this->plugin_slug),
-            'parent_item_colon' => __('Parent Classes:', $this->plugin_slug),
-            'search_items' => __('Search Classes', $this->plugin_slug),
-            'popular_items' => __('Popular Classes', $this->plugin_slug),
-            'separate_items_with_commas' => __('Separate Classes with commas', $this->plugin_slug),
-            'add_or_remove_items' => __('Add or remove Classes.', $this->plugin_slug),
-            'choose_from_most_used' => __('Choose from most used Classes.', $this->plugin_slug),
-            'not_found' => __('No Classes found.', $this->plugin_slug),
+            'name' => _x( 'Classes', 'post type general name', $this->plugin_slug ),
+            'singular_name' => _x( 'Class', 'post type singular name', $this->plugin_slug ),
+            'menu_name' => _x( 'Classes', 'admin menu', $this->plugin_slug ),
+            'all_items' => __( 'All Classes', $this->plugin_slug ),
+            'edit_item' => __( 'Edit Classes', $this->plugin_slug ),
+            'view_item' => __( 'View Class', $this->plugin_slug ),
+            'update_item' => __( 'Update Class', $this->plugin_slug ),
+            'add_new_item' => __( 'Add New Class', $this->plugin_slug ),
+            'new_item_name' => __( 'New Class', $this->plugin_slug ),
+            'parent_item' => __( 'Parent Classes:', $this->plugin_slug ),
+            'parent_item_colon' => __( 'Parent Classes:', $this->plugin_slug ),
+            'search_items' => __( 'Search Classes', $this->plugin_slug ),
+            'popular_items' => __( 'Popular Classes', $this->plugin_slug ),
+            'separate_items_with_commas' => __( 'Separate Classes with commas', $this->plugin_slug ),
+            'add_or_remove_items' => __( 'Add or remove Classes.', $this->plugin_slug ),
+            'choose_from_most_used' => __( 'Choose from most used Classes.', $this->plugin_slug ),
+            'not_found' => __( 'No Classes found.', $this->plugin_slug ),
         );
         // create a new taxonomy
         register_taxonomy(
                 'classes', 'character', array(
-            'label' => __('Class'),
+            'label' => __( 'Class' ),
             'labels' => $labels,
-            'rewrite' => array('slug' => 'class'),
+            'rewrite' => array( 'slug' => 'class' ),
             'capabilities' => array(
                 'manage__terms' => 'edit_posts',
                 'edit_terms' => 'manage_categories',
@@ -477,18 +472,13 @@ class PlayfulCharacters {
      *
      */
     public function get_current_character() {
-        $meta = get_user_meta(get_current_user_id());
-        if (isset($meta['playful_current_character'])) {
-            $this->current_character = get_post(intval($meta['playful_current_character']));
-        } else {
-            echo 'You do not have a character. You should create one';
+        if ( $this->current_character === null ) {
+            $meta = get_user_meta( get_current_user_id() );
+            if ( isset( $meta[ 'playful_current_character' ] ) ) {
+                $this->current_character = get_post( $meta[ 'playful_current_character' ][ 0 ] );
+            }
         }
-
-
-        if (isset($meta['playful_characters'])) {
-            echo 'Your character ids:';
-            echo '<pre>' . print_r($meta = get_user_meta(get_current_user_id(), 'playful_characters')) . '</pre>';
-        }
+        return $this->current_character;
     }
 
     /**
@@ -498,23 +488,24 @@ class PlayfulCharacters {
      * @param type $id
      * @return type
      */
-    public function on_save_post($id) {
+    public function on_save_post( $id ) {
         global $post;
 
-        if ($post->post_type != 'character') {
+        if ( $post->post_type != 'character' ) {
             return;
         }
 
 //        $user = get_user_by('id', $post->post_author);
-        $meta = get_user_meta($post->post_author);
+        $meta = get_user_meta( $post->post_author );
 
-        if (isset($meta['playful_characters']) && in_array($id, $chars = $meta['playful_characters'])) {
+        if ( isset( $meta[ 'playful_characters' ] ) && in_array( $id, $chars = $meta[ 'playful_characters' ] ) ) {
             $chars[] = $id;
-            update_user_meta($post->post_author, 'playful_characters', $chars);
+            update_user_meta( $post->post_author, 'playful_characters', $chars );
         } else {
-            update_user_meta($post->post_author, 'playful_characters', array($id));
+            update_user_meta( $post->post_author, 'playful_characters', array( $id ) );
         }
-        update_user_meta($post->post_author, 'playful_current_character', $id);
+//        error_log( 'applying this char id as current character: ' . $id );
+        update_user_meta( $post->post_author, 'playful_current_character', $id );
     }
 
 }
