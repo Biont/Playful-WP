@@ -61,18 +61,8 @@ class PlayfulCharacterAdmin {
         // Add the options page and menu item.
 //        add_action('admin_init', array($this, 'register_settings'));
         // Add the options page and menu item.
-        add_action('admin_menu', array($this, 'register_settings'));
-        add_action('admin_menu', array($this, 'add_admin_menu'));
-
-
-        /*
-         * Define custom functionality.
-         *
-         * Read more about actions and filters:
-         * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-         */
-        add_action('@TODO', array($this, 'action_method_name'));
-        add_filter('@TODO', array($this, 'filter_method_name'));
+        add_action('admin_menu', array($this, 'register_settings'), 99);
+        add_action('admin_menu', array($this, 'add_admin_menu'), 99);
     }
 
     /**
@@ -83,16 +73,6 @@ class PlayfulCharacterAdmin {
      * @return    object    A single instance of this class.
      */
     public static function get_instance() {
-        /*
-         * @TODO :
-         *
-         * - Uncomment following lines if the admin class should only be available for super admins
-         */
-        /* if( ! is_super_admin() ) {
-          return;
-          } */
-
-        // If the single instance hasn't been set, set it now.
         if (null == self::$instance) {
             self::$instance = new self;
         }
@@ -104,6 +84,10 @@ class PlayfulCharacterAdmin {
 
         register_setting('playful-characters-settings', 'is_single_character');
         register_setting('playful-characters-settings', 'character_limit');
+
+        register_setting('playful-characters-settings', 'add_races');
+        register_setting('playful-characters-settings', 'add_classes');
+        register_setting('playful-characters-settings', 'add_jobs');
         //Plugins
     }
 
@@ -114,9 +98,9 @@ class PlayfulCharacterAdmin {
      */
     public function add_admin_menu() {
 
-        $this->plugin_screen_hook_suffix = add_menu_page(
-                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', 'playful_wp_settings', array($this, 'display_admin_page'), 'hurr', 19
-        );
+//        $this->plugin_screen_hook_suffix = add_menu_page(
+//                __('Playful WP Settings', $this->plugin_slug), __('PlayfulWP', $this->plugin_slug), 'manage_options', 'playful_wp_settings', array($this, 'display_admin_page'), 'hurr', 19
+//        );
 
         add_submenu_page('playful_wp_settings', __('Playful WP Plugins', $this->plugin_slug), __('Characters', $this->plugin_slug), 'manage_options', 'playful_characters', array($this, 'display_character_page'));
     }
