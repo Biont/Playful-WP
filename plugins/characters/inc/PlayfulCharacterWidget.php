@@ -284,13 +284,13 @@ class PlayfulCharacterWidget extends WP_Widget {
 
 
                 if ( $show_race_class == 1 ) {
-// get taxonomies and display
-//                    echo '<pre>' . print_r( get_object_taxonomies( get_post( $character->ID ), 'objects' ) ) . '</pre><p>';
+                    // get taxonomies and display
                     foreach ( get_object_taxonomies( get_post( $character->ID ), 'objects' ) as $name => $tax ) {
                         $terms = get_the_terms( $character->ID, $name );
-//                        echo '<pre>' . print_r( $terms ) . '</pre><p>';
-                        foreach ( $terms as $term ) {
-                            echo $tax->labels->singular_name . ': <a href="' . get_term_link( $term ) . '">' . $term->name . '</a><br>';
+                        if ( FALSE !== $terms ) { // Taxonomy might not be set
+                            foreach ( $terms as $term ) {
+                                echo $tax->labels->singular_name . ': <a href="' . get_term_link( $term ) . '">' . $term->name . '</a><br>';
+                            }
                         }
                     }
                 } else {
