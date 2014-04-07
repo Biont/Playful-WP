@@ -27,7 +27,7 @@
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 // If this file is called directly, abort.
-if ( !defined( 'WPINC' ) ) {
+if (!defined('WPINC')) {
     die;
 }
 
@@ -35,10 +35,10 @@ if ( !defined( 'WPINC' ) ) {
  * Public-Facing Functionality
  * ---------------------------------------------------------------------------- */
 
-$plugin_path = plugin_dir_path( __FILE__ );
+$plugin_path = plugin_dir_path(__FILE__);
 
 // Add everything in the inc folder
-foreach ( glob( $plugin_path . 'inc/*.php' ) as $file ) {
+foreach (glob($plugin_path . 'inc/*.php') as $file) {
     require $file;
 }
 
@@ -49,10 +49,10 @@ require_once( $plugin_path . 'lib/taxonomy_meta.php' );
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  */
-register_activation_hook( __FILE__, array( 'PlayfulWP', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'PlayfulWP', 'deactivate' ) );
+register_activation_hook(__FILE__, array('PlayfulWP', 'activate'));
+register_deactivation_hook(__FILE__, array('PlayfulWP', 'deactivate'));
 
-add_action( 'plugins_loaded', array( 'PlayfulWP', 'get_instance' ) );
+add_action('plugins_loaded', array('PlayfulWP', 'get_instance'));
 
 
 
@@ -71,9 +71,9 @@ add_action( 'plugins_loaded', array( 'PlayfulWP', 'get_instance' ) );
  *
  * The code below is intended to to give the lightest footprint possible.
  */
-if ( is_admin() && (!defined( 'DOING_AJAX' ) || !DOING_AJAX ) ) {
+if (is_admin()) {
 
     require_once( $plugin_path . 'admin/PlayfulWPAdmin.php' );
     require_once( $plugin_path . 'admin/PlayfulWPSettings.php' );
-    add_action( 'plugins_loaded', array( 'PlayfulWPAdmin', 'get_instance' ) );
+    add_action('plugins_loaded', array('PlayfulWPAdmin', 'get_instance'));
 }
