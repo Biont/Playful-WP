@@ -1,4 +1,5 @@
 <?php
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -42,7 +43,7 @@ class PlayfulInventoryAdmin {
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
 
         add_action('admin_footer', array($this, 'add_inventory_ajax'));
-        add_action('wp_ajax_inventory_box', array($this, 'return_inventory_ajax'));
+        add_action('wp_ajax_item_list', array($this, 'return_item_list'));
 
         // Load admin style sheet and JavaScript.
 //        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_styles'));
@@ -87,47 +88,70 @@ class PlayfulInventoryAdmin {
                 $('#all_inventory_items_button').on('click', function() {
 
                     var data = {
-                        action: 'inventory_box',
+                        action: 'item_list',
                         whatever: 1234
                     };
                     // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
                     $.post(ajaxurl, data, function(response) {
+                        var content = $('#all_inventory_items_content');
+                        var items = JSON.parse(response);
+                        console.log(items);
 
-                        $('#all_inventory_items_content').html(response)
+                        var itemCount = items.length
+                        for (i = 0; i < itemCount; i++) {
+
+                            var item = items[i];
+
+                            var newItem = $('<div>', {
+                                class: 'inventory-item',
+                                html: 'hurrrrr' + item.title,
+                            });
+
+                            content.append(ich.thickbox_item(item).data('itemdata', item));
+                        }
+
                     });
                 });
                 $('#all_inventory_items_content').on('click', '.inventory-item', function() {
-                    alert($(this).data('item-id'));
+                    var item = $(this).data('itemdata');
+                    alert(item.id);
+
+                    $('#character_inventory').append(ich.metabox_item(item));
                 });
 
 
             });
         </script>
         <?php
+
     }
 
-    function return_inventory_ajax() {
+    function return_item_list() {
         global $wpdb; // this is how you get access to the database
         $args = array(
             'post_type' => 'item',
             'post_status' => 'publish',
-            'posts_per_page' => -1,
+            'posts_per_page' => (isset($_POST['posts_per_page'])) ? $_POST['posts_per_page'] : -1,
             'caller_get_posts' => 1);
 
+        $result = array();
+
         $my_query = new WP_Query($args);
+
         if ($my_query->have_posts()) {
             while ($my_query->have_posts()) : $my_query->the_post();
-                ?>
-                <div class="inventory-item" data-item-id="<?php the_ID(); ?>">
-                    <span class="inventory-item-title"><?php the_title(); ?></span>
-                    <div class="inventory-item-info"></div>
-                    <?php if (has_post_thumbnail()) the_post_thumbnail() ?>
-                </div>
-                <?php
+                $item = array();
+                $item['id'] = get_the_ID();
+                $item['title'] = get_the_title();
+                $item['content'] = get_the_content();
+                $item['thumbnail'] = (has_post_thumbnail()) ? get_the_post_thumbnail() : '';
+
+                $result[] = $item;
             endwhile;
         }
-        wp_reset_query();  // Restore global post data stomped by the_post().
 
+        wp_reset_query();  // Restore global post data stomped by the_post().
+        echo json_encode($result);
         die(); // this is required to return a proper result
     }
 

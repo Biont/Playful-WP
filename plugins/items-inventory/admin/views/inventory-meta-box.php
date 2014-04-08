@@ -11,12 +11,29 @@
 </div>
 
 <a id="all_inventory_items_button" href="#TB_inline?width=600&height=550&inlineId=all_inventory_items" class="thickbox"><?php echo __('All Items', $this->plugin_slug) ?></a>
-<?php
-$inventory = get_user_inventory();
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
+<div id="character_inventory">
+    <?php
+    $inventory = get_user_inventory();
+    ?>
+</div>
+
+
+<script id="thickbox_item" type="text/html">
+    <div class="inventory-item">
+        <span class="name">{{ title }}</span>
+        <img src="{{ thumbnail }}">
+        <input type="hidden" name="item_ids[]" value="{{ id }}">
+        <p>{{ content }}</p>
+    </div>
+</script>
+
+<script id="metabox_item" type="text/html">
+    <div class="metabox-item">
+        <span class="name">{{ title }}</span>
+        <img src="{{ thumbnail }}">
+        <input type="hidden" name="item_ids[]" value="{{ id }}">
+        <p>{{ content }}</p>
+    </div>
+</script>

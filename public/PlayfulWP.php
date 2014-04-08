@@ -94,6 +94,7 @@ class PlayfulWP {
         // Load public-facing style sheet and JavaScript.
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts')); //Might want to move this to the admin plugin
 
 
 
@@ -317,6 +318,7 @@ class PlayfulWP {
      */
     public function enqueue_scripts() {
         wp_enqueue_script($this->plugin_slug . '-plugin-script', plugins_url('assets/js/public.js', __FILE__), array('jquery'), self::VERSION);
+        wp_enqueue_script($this->plugin_slug . '-icanhaz', plugins_url('assets/js/ICanHaz.js', __FILE__), array('jquery'), self::VERSION);
     }
 
     /**
